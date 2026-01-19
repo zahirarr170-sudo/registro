@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Registros</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: #e5e7eb;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: auto;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+
+    p {
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    .card {
+      max-width: 1100px;
+      margin: auto;
+      background: #020617;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.6);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #1e293b;
+      text-align: left;
+    }
+
+    th {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(99,102,241,.05);
+    }
+
+    a.map {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: .75rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>📍 Registros de Geolocalización</h1>
+    <p>Proyecto educativo — Zahir Anthony</p>
+  </header>
+
+  <div class="card">
+    <table id="tabla">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Latitud</th>
+          <th>Longitud</th>
+          <th>Mapa</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <footer>
+    Solo para uso educativo · Con consentimiento
+  </footer>
+
+  <script>
+    // 👉 Pega aquí el ID de tu Google Sheet
+    const SHEET_ID = "PEGA_AQUI_TU_SHEET_ID";
+
+    // Cargar datos públicos del Sheet
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+    fetch(url)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const rows = json.table.rows;
+        const tbody = document.querySelector("#tabla tbody");
+
+        rows.forEach(r => {
+          const fecha = r.c[0]?.f || "";
+          const lat = r.c[1]?.v || "";
+          const lon = r.c[2]?.v || "";
+          const mapLink = r.c[4]?.v || "";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${fecha}</td>
+            <td>${lat}</td>
+            <td>${lon}</td>
+            <td><a class="map" href="${mapLink}" target="_blank">Ver en Maps</a></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+
+</body>
+</html>
